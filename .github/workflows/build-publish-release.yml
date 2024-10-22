@@ -162,7 +162,7 @@ jobs:
               fi
           RUN chmod +x librespeed-rs; rm -rf binary/
           EXPOSE 8080
-          ENTRYPOINT ["/usr/local/bin/librespeed-rs"]
+          ENTRYPOINT ["librespeed-rs"]
           EOF
         
       - name: Build container image
