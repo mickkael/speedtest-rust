@@ -28,6 +28,11 @@ jobs:
             os: ubuntu-20.04
             target: aarch64-unknown-linux-gnu
             sys-type: linux
+            
+          - build: linux-aarch64-musl
+            os: ubuntu-24.04
+            target: aarch64-unknown-linux-musl
+            sys-type: linux
 
           - build: linux-i686-gnu
             os: ubuntu-20.04
@@ -37,6 +42,11 @@ jobs:
           - build: linux-armv7-gnueabihf
             os: ubuntu-20.04
             target: armv7-unknown-linux-gnueabihf
+            sys-type: linux
+
+          - build: linux-armv7-musleabihf
+            os: ubuntu-24.04
+            target: armv7-unknown-linux-musleabihf
             sys-type: linux
 
           - build: linux-64-musl
@@ -148,15 +158,15 @@ jobs:
           COPY configs.toml configs.toml
           COPY assets assets
           COPY librespeed-rs-x86_64-unknown-linux-musl binary/librespeed-rs-x86_64-unknown-linux-musl
-          COPY librespeed-rs-aarch64-unknown-linux-gnu binary/librespeed-rs-aarch64-unknown-linux-gnu
-          COPY librespeed-rs-armv7-unknown-linux-gnueabihf binary/librespeed-rs-armv7-unknown-linux-gnueabihf
+          COPY librespeed-rs-aarch64-unknown-linux-musl binary/librespeed-rs-aarch64-unknown-linux-musl
+          COPY librespeed-rs-armv7-unknown-linux-musleabihf binary/librespeed-rs-armv7-unknown-linux-musleabihf
           # Match the correct binary based on the platform
           RUN if [ "\$TARGETPLATFORM" = "linux/amd64" ]; then \
                   cp binary/librespeed-rs-x86_64-unknown-linux-musl/librespeed-rs librespeed-rs; \
               elif [ "\$TARGETPLATFORM" = "linux/arm64" ]; then \
-                  cp binary/librespeed-rs-aarch64-unknown-linux-gnu/librespeed-rs librespeed-rs;apk add libc6-compat; \
+                  cp binary/librespeed-rs-aarch64-unknown-linux-musl/librespeed-rs librespeed-rs;apk add libc6-compat; \
               elif [ "\$TARGETPLATFORM" = "linux/arm/v7" ]; then \
-                  cp binary/librespeed-rs-armv7-unknown-linux-gnueabihf/librespeed-rs librespeed-rs;apk add libc6-compat; \
+                  cp binary/librespeed-rs-armv7-unknown-linux-musleabihf/librespeed-rs librespeed-rs;apk add libc6-compat; \
               else \
                   echo "Unsupported platform: \$TARGETPLATFORM" && exit 1; \
               fi
