@@ -28,11 +28,6 @@ jobs:
             os: ubuntu-20.04
             target: aarch64-unknown-linux-gnu
             sys-type: linux
-            
-          - build: linux-aarch64-musl
-            os: ubuntu-24.04
-            target: aarch64-unknown-linux-musl
-            sys-type: linux
 
           - build: linux-i686-gnu
             os: ubuntu-20.04
@@ -42,11 +37,6 @@ jobs:
           - build: linux-armv7-gnueabihf
             os: ubuntu-20.04
             target: armv7-unknown-linux-gnueabihf
-            sys-type: linux
-
-          - build: linux-armv7-musleabihf
-            os: ubuntu-24.04
-            target: armv7-unknown-linux-musleabihf
             sys-type: linux
 
           - build: linux-64-musl
@@ -91,12 +81,6 @@ jobs:
           elif [ "${{ matrix.build }}" = "linux-armv7-gnueabihf" ]; then
             sudo apt-get install -y gcc-arm-linux-gnueabihf
           elif [ "${{ matrix.build }}" = "linux-64-musl" ]; then
-            sudo apt-get install -y musl-tools
-          elif [ "${{ matrix.build }}" = "linux-aarch64-musl" ]; then
-            sudo apt-get install -y musl-tools
-            export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc
-            export CC=aarch64-linux-gnu-gcc
-          elif [ "${{ matrix.build }}" = "linux-armv7-musleabihf" ]; then
             sudo apt-get install -y musl-tools
           fi
 
@@ -163,22 +147,22 @@ jobs:
           RUN mkdir -p binary
           COPY configs.toml configs.toml
           COPY assets assets
-          COPY librespeed-rs-x86_64-unknown-linux-musl binary/librespeed-rs-x86_64-unknown-linux-musl
-          COPY librespeed-rs-aarch64-unknown-linux-musl binary/librespeed-rs-aarch64-unknown-linux-musl
-          COPY librespeed-rs-armv7-unknown-linux-musleabihf binary/librespeed-rs-armv7-unknown-linux-musleabihf
+          COPY librespeed-rs-x86_64-unknown-linux-gnu binary/librespeed-rs-x86_64-unknown-linux-gnu
+          COPY librespeed-rs-aarch64-unknown-linux-gnu binary/librespeed-rs-aarch64-unknown-linux-gnu
+          COPY librespeed-rs-armv7-unknown-linux-gnueabihf binary/librespeed-rs-armv7-unknown-linux-gnueabihf
           # Match the correct binary based on the platform
           RUN if [ "\$TARGETPLATFORM" = "linux/amd64" ]; then \
-                  cp binary/librespeed-rs-x86_64-unknown-linux-musl/librespeed-rs librespeed-rs; \
+                  cp binary/librespeed-rs-x86_64-unknown-linux-gnu/librespeed-rs librespeed-rs; \
               elif [ "\$TARGETPLATFORM" = "linux/arm64" ]; then \
-                  cp binary/librespeed-rs-aarch64-unknown-linux-musl/librespeed-rs librespeed-rs;apk add libc6-compat; \
+                  cp binary/librespeed-rs-aarch64-unknown-linux-gnu/librespeed-rs librespeed-rs; \
               elif [ "\$TARGETPLATFORM" = "linux/arm/v7" ]; then \
-                  cp binary/librespeed-rs-armv7-unknown-linux-musleabihf/librespeed-rs librespeed-rs;apk add libc6-compat; \
+                  cp binary/librespeed-rs-armv7-unknown-linux-gnueabihf/librespeed-rs librespeed-rs; \
               else \
                   echo "Unsupported platform: \$TARGETPLATFORM" && exit 1; \
               fi
-          RUN chmod +x librespeed-rs; rm -rf binary/
+          RUN rm -rf binary/
           EXPOSE 8080
-          ENTRYPOINT ["librespeed-rs"]
+          ENTRYPOINT ["/usr/local/bin/librespeed-rs"]
           EOF
         
       - name: Build container image
