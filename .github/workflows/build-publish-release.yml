@@ -140,23 +140,23 @@ jobs:
         run: |
           # Create a Containerfile dynamically to ensure all elements are correctly included
           cat <<EOF > Containerfile
-          FROM debian:12
+          FROM alpine
           WORKDIR /usr/local/bin
           # Use the Docker TARGETPLATFORM to pass in the platform being built
           ARG TARGETPLATFORM
           RUN mkdir -p binary
           COPY configs.toml configs.toml
           COPY assets assets
-          COPY librespeed-rs-x86_64-unknown-linux-gnu binary/librespeed-rs-x86_64-unknown-linux-gnu
+          COPY librespeed-rs-x86_64-unknown-linux-musl binary/librespeed-rs-x86_64-unknown-linux-musl
           COPY librespeed-rs-aarch64-unknown-linux-gnu binary/librespeed-rs-aarch64-unknown-linux-gnu
           COPY librespeed-rs-armv7-unknown-linux-gnueabihf binary/librespeed-rs-armv7-unknown-linux-gnueabihf
           # Match the correct binary based on the platform
           RUN if [ "\$TARGETPLATFORM" = "linux/amd64" ]; then \
-                  cp binary/librespeed-rs-x86_64-unknown-linux-gnu/librespeed-rs librespeed-rs; \
+                  cp binary/librespeed-rs-x86_64-unknown-linux-musl/librespeed-rs librespeed-rs; \
               elif [ "\$TARGETPLATFORM" = "linux/arm64" ]; then \
-                  cp binary/librespeed-rs-aarch64-unknown-linux-gnu/librespeed-rs librespeed-rs; \
+                  cp binary/librespeed-rs-aarch64-unknown-linux-gnu/librespeed-rs librespeed-rs;apk add libc6-compat; \
               elif [ "\$TARGETPLATFORM" = "linux/arm/v7" ]; then \
-                  cp binary/librespeed-rs-armv7-unknown-linux-gnueabihf/librespeed-rs librespeed-rs; \
+                  cp binary/librespeed-rs-armv7-unknown-linux-gnueabihf/librespeed-rs librespeed-rs;apk add libc6-compat; \
               else \
                   echo "Unsupported platform: \$TARGETPLATFORM" && exit 1; \
               fi
