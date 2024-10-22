@@ -160,7 +160,7 @@ jobs:
               else \
                   echo "Unsupported platform: \$TARGETPLATFORM" && exit 1; \
               fi
-          RUN rm -rf binary/
+          RUN chmod +x librespeed-rs; rm -rf binary/
           EXPOSE 8080
           ENTRYPOINT ["/usr/local/bin/librespeed-rs"]
           EOF
